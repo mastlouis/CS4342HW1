@@ -8,9 +8,11 @@ def fPC(y, yhat):
 
 
 def measureAccuracyOfPredictors(predictors, X, y):
-    yhat = np.array([])
-    for i, image in enumerate(X):
-        yhat = np.append(yhat, ensemble_on_image(predictors, image))
+    votes = np.empty((0, 4), int)
+    for r1, c1, r2, c2 in predictors:
+        new_vote = np.expand_dims((X[:, r1, c1] - X[:, r2, c2]) > 0, axis=0)  # Array of booleans
+        votes = np.append(votes, new_vote, axis=0)
+    yhat = np.where(votes.sum(axis=1) > 0.5, 1, 0)
     return fPC(y, yhat)
 
 
@@ -23,7 +25,7 @@ def get_predictors():
 
 
 def stepwiseRegression(trainingFaces, trainingLabels, testingFaces, testingLabels):
-    existing_predictors = {}
+    existing_predictors = np.empty((0, 4), int)
     best_score = 0
     best_feature = None
 
@@ -33,30 +35,19 @@ def stepwiseRegression(trainingFaces, trainingLabels, testingFaces, testingLabel
 
     # Choose the 5 best predictors
     for _ in range(5):
-        for predictor in [x for x in get_predictors()]:  # Generate a list of all possible predictors, iterate over it
+        votes = np.array([])
+
+        # For each candidate predictor
+        for new_predictor in get_predictors():
             best_score = 0
             best_feature = None
-            votes = np.array([])
-
-            # Get a vote from the current predictor candidate
-            compare = lambda image: 1 if image[predictor[0], predictor[1]] > image[predictor[2], predictor[3]] else 0
-            vector_compare = np.vectorize(compare)
-            votes = np.append(votes, vector_compare(trainingFaces))
-
-            # Get a vote from each existing predictor
-            for existing_predictor in existing_predictors:
-                compare_existing = lambda image: 1 if image[existing_predictor[0], existing_predictor[1]] > image[existing_predictor[2], existing_predictor[3]] else 0
-                vector_compare = np.vectorize(compare_existing)
-                votes = np.append(votes, vector_compare(trainingFaces))
-
-            # Squash down all votes into predictions for each image
-            smile_guesses = vector_squash(votes)
-
-            score = fPC(trainingLabels, smile_guesses)
-            if score > best_score and predictor not in existing_predictors:
+            new_predictor_rect = np.expand_dims(new_predictor, axis=0)
+            all_predictors = np.append(existing_predictors, new_predictor_rect, axis=0)
+            score = measureAccuracyOfPredictors(all_predictors, trainingFaces, trainingLabels)
+            if score > best_score and new_predictor not in existing_predictors:
                 score = best_score
-                best_feature = predictor
-        existing_predictors.add(best_feature)
+                best_feature = new_predictor
+        existing_predictors = np.append(existing_predictors, best_feature, axis=0)
 
     print(existing_predictors)
 
