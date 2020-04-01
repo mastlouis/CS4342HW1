@@ -21,8 +21,8 @@ def measureAccuracyOfPredictors(predictors, X, y):
         votes[i] = new_vote
     valid_votes = votes[:num_predictors]
     if valid_votes.shape[0] > 1:
-        valid_votes.sum(axis=0)
-        valid_votes / valid_votes.shape[0]
+        valid_votes = valid_votes.sum(axis=0)
+        valid_votes /= num_predictors
         valid_votes = np.where(valid_votes >= 0.5, 1, 0)
     # yhat = np.where(votes[:num_predictors].sum(axis=1) > 0.5, 1, 0)
     yhat = valid_votes
