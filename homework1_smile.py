@@ -8,11 +8,18 @@ def fPC(y, yhat):
 
 
 def measureAccuracyOfPredictors(predictors, X, y):
-    votes = np.empty((0, 4), int)
-    for r1, c1, r2, c2 in predictors:
-        new_vote = np.expand_dims((X[:, r1, c1] - X[:, r2, c2]) > 0, axis=0)  # Array of booleans
-        votes = np.append(votes, new_vote, axis=0)
-    yhat = np.where(votes.sum(axis=1) > 0.5, 1, 0)
+    num_predictors = 0
+    votes = np.zeros((predictors.shape[0], X.shape[0]))
+    for i in range(len(predictors)):
+        r1, c1, r2, c2 = predictors[i]
+        if r1 == 0 and c1 == 0 and r2 == 0 and c2 == 0 and i != 1:
+            break
+        num_predictors += 1
+        new_vote = X[: r1, c1] - X[:, r2, c2]
+        new_vote[new_vote > 0] = 1
+        new_vote[new_vote != 1] = 0
+        votes[i] = new_vote
+    yhat = np.where(votes[:num_predictors].sum(axis=1) > 0.5, 1, 0)
     return fPC(y, yhat)
 
 
@@ -25,7 +32,8 @@ def get_predictors():
 
 
 def stepwiseRegression(trainingFaces, trainingLabels, testingFaces, testingLabels):
-    existing_predictors = np.empty((0, 4), int)
+    final_num_features = 5
+    existing_predictors = np.zeros((final_num_features, 4))
     best_score = 0
     best_feature = None
 
@@ -34,19 +42,18 @@ def stepwiseRegression(trainingFaces, trainingLabels, testingFaces, testingLabel
     vector_squash = np.vectorize(squash)
 
     # Choose the 5 best predictors
-    for _ in range(5):
-        votes = np.array([])
+    for new_feature_number in range(final_num_features):
+        votes = np.zeros((final_num_features, trainingFaces.shape[0]))
 
         # For each candidate predictor
+        best_score = 0
+        best_feature = None
         for new_predictor in get_predictors():
-            best_score = 0
-            best_feature = None
-            new_predictor_rect = np.expand_dims(new_predictor, axis=0)
-            all_predictors = np.append(existing_predictors, new_predictor_rect, axis=0)
-            score = measureAccuracyOfPredictors(all_predictors, trainingFaces, trainingLabels)
+            # existing_predictors[new_feature_number] =
+            # score = measureAccuracyOfPredictors(all_predictors, trainingFaces, trainingLabels)
             if score > best_score and new_predictor not in existing_predictors:
                 score = best_score
-                best_feature = new_predictor
+                best_feature = np.expand_dims(new_predictor, axis=1)
         existing_predictors = np.append(existing_predictors, best_feature, axis=0)
 
     print(existing_predictors)
