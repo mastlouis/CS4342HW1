@@ -1,6 +1,57 @@
 400 Training Examples
-Predictors used:None
-400 Training Examples
-Predictors used:None
-400 Training Examples
-Predictors used:None
+Predictors used:[[21. 16. 17.  7.]
+ [18. 13. 16.  7.]
+ [12.  5. 12. 14.]
+ [22.  6. 14. 17.]
+ [13. 19.  9. 14.]]
+Training Accuracy with 400 examples = 0.7365
+Testing Accuracy with 400 examples = 0.7100656455142232
+
+
+800 Training Examples
+Predictors used:[[20.  7. 17.  7.]
+ [19.  8. 16.  7.]
+ [13.  5. 11. 13.]
+ [18. 12. 14. 17.]
+ [13. 19. 13. 11.]]
+Training Accuracy with 800 examples = 0.772
+Testing Accuracy with 800 examples = 0.736870897155361
+
+
+1200 Training Examples
+Predictors used:[[20.  7. 17.  7.]
+ [19.  8. 16.  7.]
+ [12.  6. 12. 13.]
+ [18. 12. 16. 17.]
+ [13. 18. 15.  8.]]
+Training Accuracy with 1200 examples = 0.78
+Testing Accuracy with 1200 examples = 0.7467177242888403
+
+
+1600 Training Examples
+Predictors used:[[20.  7. 17.  7.]
+ [19.  8. 16.  7.]
+ [12.  7. 11. 11.]
+ [18. 12. 16.  7.]
+ [13. 18. 16. 11.]]
+Training Accuracy with 1600 examples = 0.7815
+Testing Accuracy with 1600 examples = 0.7417943107221007
+
+
+2000 Training Examples
+Predictors used:[[20.  7. 17.  7.]
+ [21. 17. 16.  8.]
+ [12.  5. 11. 12.]
+ [23.  8. 16.  6.]
+ [12. 19. 12. 13.]]
+Training Accuracy with 2000 examples = 0.786
+Testing Accuracy with 2000 examples = 0.7521881838074398
+
+
+Final Accuracy of model = 0.7521881838074398
+Final Predictors used:
+[[20.  7. 17.  7.]
+ [21. 17. 16.  8.]
+ [12.  5. 11. 12.]
+ [23.  8. 16.  6.]
+ [12. 19. 12. 13.]]
