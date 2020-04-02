@@ -63,22 +63,46 @@ def stepwiseRegression(trainingFaces, trainingLabels, testingFaces, testingLabel
                 best_predictor = new_predictor
         existing_predictors[new_predictor_number] = best_predictor
 
-    print(existing_predictors)
+    print('Result of Stepwise Regression: ' + str(existing_predictors))
+    return existing_predictors
 
-    show = False
-    if show:
-        # Show an arbitrary test image in grayscale
-        im = testingFaces[0, :, :]
-        fig, ax = plt.subplots(1)
-        ax.imshow(im, cmap='gray')
-        # Show r1,c1
-        rect = patches.Rectangle((c1 - 0.5, r1 - 0.5), 1, 1, linewidth=2, edgecolor='r', facecolor='none')
+
+#Draws the features out of the testing faces file
+def drawFeatures(predictors, testingFaces):
+    im = testingFaces[0,:,:]
+    fig,ax = plt.subplots(1)
+    ax.imshow(im, cmap='gray')
+    # Show r1,c1
+    for coordinates in predictors:
+        r1, c1, r2, c2  = coordinates
+        rect = patches.Rectangle((c1 - 0.5, r1 - 0.5),1,1,linewidth=2,edgecolor='r',facecolor='none')
         ax.add_patch(rect)
         # Show r2,c2
-        rect = patches.Rectangle((c2 - 0.5, r2 - 0.5), 1, 1, linewidth=2, edgecolor='b', facecolor='none')
+        rect = patches.Rectangle((c2 - 0.5,r2 - 0.5),1,1,linewidth=2,edgecolor='b',facecolor='none')
         ax.add_patch(rect)
-        # Display the merged result
-        plt.show()
+    # Display the merged result
+    plt.show()
+
+#Creates an output to a textfile that calculates the accuracy of the testing
+def output(trainingFaces, trainingLabels, testingFaces, testingLabels):
+    samples = [400,800,1200,1600,2000]
+    with open("output.txt", "a") as f:
+        predictors = None
+        for sampleNum in samples:
+            print("{} Training Examples".format(sampleNum),file = f)
+
+            predictors = stepwiseRegression(trainingFaces[:sampleNum],trainingLabels[:sampleNum],testingFaces,testingLabels)
+            print("Predictors used:{}".format(predictors),file = f)
+
+            accuracy = measureAccuracyOfPredictors(predictors,trainingFaces,trainingLabels)
+            print("Training Accuracy with {} examples = {}".format(sampleNum, accuracy),file = f)
+
+            accuracy = measureAccuracyOfPredictors(predictors,testingFaces,testingLabels)
+            print("Testing Accuracy with {} examples = {}\n\n".format(sampleNum, accuracy),file = f)
+
+        print("Final Accuracy of model = {}".format(accuracy),file = f)
+
+        print("Final Predictors used:\n{}".format(predictors),file = f)
 
 
 def loadData(which):
@@ -91,4 +115,4 @@ def loadData(which):
 if __name__ == "__main__":
     testingFaces, testingLabels = loadData("test")
     trainingFaces, trainingLabels = loadData("train")
-    stepwiseRegression(trainingFaces, trainingLabels, testingFaces, testingLabels)
+    output(trainingFaces, trainingLabels, testingFaces, testingLabels)
